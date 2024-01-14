@@ -2,7 +2,7 @@ require('dotenv').config();
 const express= require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-// const jwt = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 // const md5= require("md5");
 // const encrypt = require('mongoose-encryption');
 // const bcrypt = require('bcrypt');
@@ -111,23 +111,23 @@ passport.serializeUser((user, done) => {
  });
 
 
-// const verifyuser = (req,res,next)=>{
-//     const token = req.cookies.jwtoken;
-//     if(token){
-//         jwt.verify(token,process.env.SECRET_KEY,function(err,decoded){
-//             if(err){
-//                 res.json("invalid_token");
-//             }
-//             else{
-//                 res.json(decoded);
-//                 next();
-//             }
-//         })
-//     }
-//     else{
-//         res.json("unauthorized");
-//     }
-// }
+const verifyuser = (req,res,next)=>{
+    const token = req.cookies.jwtoken;
+    if(token){
+        jwt.verify(token,process.env.SECRET_KEY,function(err,decoded){
+            if(err){
+                res.json("invalid_token");
+            }
+            else{
+                res.json(decoded);
+                next();
+            }
+        })
+    }
+    else{
+        res.json("unauthorized");
+    }
+}
 
 
 app.get("/logout",(req,res)=>{
@@ -179,13 +179,13 @@ app.post("/login", (req,res)=>{
         }
         else{
             passport.authenticate("local")(req,res,function(){
-                // const token = jwt.sign({password:password},process.env.SECRET_KEY);
-                // console.log(token);
+                const token = jwt.sign({password:password},process.env.SECRET_KEY);
+                console.log(token);
                     
-                // res.cookie("jwtoken",token,{
-                //     expires: new Date(Date.now() + 3600000),
-                //     httpOnly: true
-                // });
+                res.cookie("jwtoken",token,{
+                    expires: new Date(Date.now() + 3600000),
+                    httpOnly: true
+                });
                 res.json("success");
             })
         }
@@ -193,9 +193,9 @@ app.post("/login", (req,res)=>{
 })
 
 
-// app.get("/profile",verifyuser,(req,res)=>{
+app.get("/profile",verifyuser,(req,res)=>{
     
-// })
+})
 
 
 
