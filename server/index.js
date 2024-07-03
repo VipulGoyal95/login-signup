@@ -156,6 +156,7 @@ app.post("/register",(req,res)=>{
     Login.register({username: req.body.username},req.body.password,function(err,user){
         if(err){
             console.log(err);
+            res.redirect("/register");
         }
         else{
             passport.authenticate("local")(req,res,function(){
